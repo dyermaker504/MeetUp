@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Meet Up</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+	<h1>Meet Up in the Middle</h1>
+	<p>Enter multiple starting locations:</p>
+    <form method="POST" action="{{ url_for('process_input') }}">
+        <label for="keyword">Search keyword:</label>
+        <input type="text" id="keyword" name="keyword" required>
+        <br>
+        <label for="address1">Enter a starting address:</label>
+        <input type="text" id="address1" name="address1"><br>
+
+        <label for="address2">Enter a starting address:</label>
+        <input type="text" id="address2" name="address2"><br>
+    
+        <label for="address3">Enter a starting address:</label>
+        <input type="text" id="address3" name="address3"><br>
+
+        <label for="address4">Enter a starting address:</label>
+        <input type="text" id="address4" name="address4"><br>
+
+        <label for="address5">Enter a starting address:</label>
+        <input type="text" id="address5" name="address5"><br>
+        
+        <label for="address6">Enter a starting address:</label>
+        <input type="text" id="address6" name="address6"><br>
+
+        <label for="address7">Enter a starting address:</label>
+        <input type="text" id="address7" name="address7"><br>
+
+        <label for="address8">Enter a starting address:</label>
+        <input type="text" id="address8" name="address8"><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
