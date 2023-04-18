@@ -6,6 +6,8 @@ import googlemaps
 import numpy as np
 from datetime import datetime
 import sys
+import urllib.parse
+
 
 app = Flask(__name__)
 testing = False
@@ -49,7 +51,8 @@ def process_input():
     
     #get the center coords of the addresses
     center_coords = get_geocenter(addresses_coords)
-
+    print("Coords: ", center_coords)
+    print("Type: ",type(center_coords))
     #set radius each time it's called
     results_min = 10  #how many results
     min_radius = 300 #meters
@@ -83,6 +86,8 @@ def process_input():
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
     #end of while
 
+
+
     #for weekday index
     weekday_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     #get hours by calling places(), and adding to results[]
@@ -101,15 +106,29 @@ def process_input():
         #current_day_name = weekday_names[current_day]
         # Print the opening hours for today with the day of the week
         #print(current_day_name + "'s hours: ", todays_hours,"\n\n")       
- 
+    
+    #trying to get map working but its giving a 'staticmaperror' on the webpage
+    # Generate the URL for the static map
+
+    str_center_coords = ', '.join(center_coords)
+    params = {
+        'center': center_coords,
+        'zoom': '14',
+        'size': '640x400',
+        'maptype': 'roadmap',
+        'key': api_key
+    }
+    print("Params: ",params)
+    #works with string
+    url = 'https://maps.googleapis.com/maps/api/staticmap?' + urllib.parse.urlencode(params)
+
     #return render_template('result.html', results=results, details=hours)
     return render_template('result.html', results=results,
                            center_coords=center_coords,
-                           keyword=keyword)
+                           keyword=keyword,
+                           static_map_url=url)
 
 
-
-###### FUNCTIONS ######
 def get_geocenter(coord_list):
   #Takes a coord pair list
   #Returns avg of coordinate pair
@@ -128,8 +147,8 @@ def get_coords(geo_address):
   coords = [lat,lng]
   return coords
 
-api_key = "AIzaSyAjaIAjo2SAuqzSqFSjNDcyM_vUQgagA6c"
 #Client API key
+api_key = "AIzaSyAjaIAjo2SAuqzSqFSjNDcyM_vUQgagA6c"
 gmaps = googlemaps.Client(key=api_key)
 
 
