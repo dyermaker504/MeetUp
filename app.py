@@ -109,10 +109,12 @@ def process_input():
     
     #trying to get map working but its giving a 'staticmaperror' on the webpage
     # Generate the URL for the static map
-
-    str_center_coords = ', '.join(center_coords)
+ #   for coords in center_coords:
+#        str_center_coords = ', '.join(str(coords))
+    str_center_coords = ', '.join('{:.6f}'.format(coord) for coord in center_coords)
+    print(str_center_coords)
     params = {
-        'center': center_coords,
+        'center': str_center_coords,
         'zoom': '14',
         'size': '640x400',
         'maptype': 'roadmap',
