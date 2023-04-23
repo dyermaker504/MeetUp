@@ -69,7 +69,7 @@ def placesearch():
     for results in results:
         nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating')])
     friends = get_friends_list()
-    return nearby_results
+    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, api_key = api_key, center = center_coords)
 
 def get_friends_list():
     dbconnect = get_db_connection()
