@@ -1,42 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Meet Up</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="{{ url_for('static', filename= 'css/friendfinder.css') }}">
+    <title>Activity Finder</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
 <body>
-	<h1>Meet Up in the Middle</h1>
-	<p>Enter multiple starting locations:</p>
-    <form method="POST" action="{{ url_for('process_input') }}">
-        <label for="keyword">Search keyword:</label>
-        <input type="text" id="keyword" name="keyword" required>
-        <br>
-        <label for="address1">Enter a starting address:</label>
-        <input type="text" id="address1" name="address1"><br>
+	
+	{% set indexnamespace = namespace(addressindex = 0) %}
+	<div class="container">
+		<div class="NavArea">
+			<h1 style="display: inline;">Activity Finder</h1>
+			<button class="navbutton">Sign In</button>
+			<button class="navbutton">Register</button>
+		</div>
+		<div class="MapArea">
+			<iframe
+			  width=100%
+			  height=100%
+			  style="border:0; border-radius: 12px;"
+			  loading="lazy"
+			  referrerpolicy="no-referrer-when-downgrade"
+			  src="https://www.google.com/maps/embed/v1/place?key={{ api_key }}
+				&q={{ center }}">
+			</iframe>
+		</div>
+		<div class="ListArea">
+			{% for nearby_results in nearby_results %}
+				<div class="placebox">
+					<p>{{ nearby_results[0] }}</p>
+					<p>{{ nearby_results[1] }}</p>
+					<p>{{ nearby_results[2] }}</p>
+				</div>
+			{% endfor %}
+		</div>
+		<div class="ActionArea">
+			<form action="/placesearch" method="POST" name="placesearch">
+				<div class="containerinner">
+					<div class="FriendArea">
+						{% for friends in friends %}
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input type="checkbox" name="friendaddress{{ indexnamespace.addressindex }}" value="{{ friends[3] }},{{ friends[4] }}"/>
+									<span class="friendbutton">{{ friends[1] }}</span>
+								<label/>
+							</span>
+							{% set indexnamespace.addressindex = indexnamespace.addressindex + 1 %}
+						{% endfor %}
+					</div>
+					<div class="SearchArea">
+						
+						  <input type="text" id="activity" name="activity" placeholder="Type of Activity"><br><br>
+						  <label for="time">Time to Meet:</label>
+						  <input type="time" id="time" name="time" required><br><br>
+						  <input type="submit" value="Submit">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
 
-        <label for="address2">Enter a starting address:</label>
-        <input type="text" id="address2" name="address2"><br>
-    
-        <label for="address3">Enter a starting address:</label>
-        <input type="text" id="address3" name="address3"><br>
-
-        <label for="address4">Enter a starting address:</label>
-        <input type="text" id="address4" name="address4"><br>
-
-        <label for="address5">Enter a starting address:</label>
-        <input type="text" id="address5" name="address5"><br>
-        
-        <label for="address6">Enter a starting address:</label>
-        <input type="text" id="address6" name="address6"><br>
-
-        <label for="address7">Enter a starting address:</label>
-        <input type="text" id="address7" name="address7"><br>
-
-        <label for="address8">Enter a starting address:</label>
-        <input type="text" id="address8" name="address8"><br>
-
-        <input type="submit" value="Submit">
-    </form>
 </body>
 </html>

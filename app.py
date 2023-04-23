@@ -1,21 +1,81 @@
-from flask import Flask
+import sqlite3, requests, json, googlemaps, numpy as np, sys, urllib.parse
 from flask import Flask, render_template, request
-import requests
-import json
-import googlemaps
-import numpy as np
 from datetime import datetime
-import sys
-import urllib.parse
 
+def get_db_connection():
+    dbconnect = sqlite3.connect('friendfinder.db')
+    dbconnect.row_factory = sqlite3.Row
+    return dbconnect
 
 app = Flask(__name__)
-testing = False
 
-#homepage
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    friends = get_friends_list()
+    return render_template('index.html', friends = friends, nearby_results = '', api_key = api_key, center = '')
+
+@app.route('/placesearch', methods=['POST'])
+def placesearch():
+    activity = request.form['activity']
+    if not activity:
+        activity = ''
+    time = request.form['time']
+    locations = []
+    for i in range(0,1000):
+        current = 'friendaddress' + str(i)
+        if current in request.form:
+            temp = request.form['friendaddress' + str(i)]
+            temp = temp.split(",")
+            temp[0] = float(temp[0])
+            temp[1] = float(temp[1])
+            locations.append(temp)
+    #get the center coords of the addresses
+    center_coords = get_geocenter(locations)
+    print("Coords: ", center_coords)
+    print("Type: ",type(center_coords))
+    #set radius each time it's called
+    results_min = 10  #how many results
+    min_radius = 300 #meters
+    max_radius = 60000 #largest it will search
+    search_radius = min_radius
+    radius_grow_rate = 1 
+    radius_grow_rate_min = 0.1 #for rate scaling
+    
+    search_success = False
+    while not search_success:
+        nearby_results = gmaps.places_nearby(center_coords, search_radius, keyword = activity, open_now=True)
+        #check the status
+        query_status = nearby_results['status']   
+        if query_status == "ZERO_RESULTS":
+            search_radius += search_radius*radius_grow_rate
+        elif search_radius >= max_radius:
+            #try an error
+            raise Exception("Max search radius exceeded")
+            break #out of the
+        else:
+            results = nearby_results.get('results')
+            results_cnt = len(results)
+            #check how many results were returned
+            if results_cnt < results_min: #not enough results, grow radius
+                search_radius += search_radius*radius_grow_rate
+            else: #we have have enough
+                search_success = True
+        #scaling radius rate is working
+        if radius_grow_rate > radius_grow_rate_min: 
+            radius_grow_rate -= radius_grow_rate/10  #dynamically shrink rate as radius grows larger
+            #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
+    #end of while
+    nearby_results_filtered = []
+    for results in results:
+        nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating')])
+    friends = get_friends_list()
+    return nearby_results
+
+def get_friends_list():
+    dbconnect = get_db_connection()
+    friends = dbconnect.execute('SELECT * FROM users').fetchall()
+    dbconnect.close()
+    return friends
 
 # This function will be called when a 500 error occurs
 @app.errorhandler(500)
@@ -152,9 +212,3 @@ def get_coords(geo_address):
 #Client API key
 api_key = "AIzaSyAjaIAjo2SAuqzSqFSjNDcyM_vUQgagA6c"
 gmaps = googlemaps.Client(key=api_key)
-
-
-  
-#put at bottom
-if __name__ == '__main__':
-    app.run()
