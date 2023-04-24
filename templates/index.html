@@ -24,15 +24,15 @@
 	<script type="text/javascript">
 		function initMap() {
 		  var center = {lat: {{ center[0] }}, lng: {{ center[1] }}};
-		  var friends = [
-			['Center Point', {{ center[0] }}, {{ center[1] }}, 0]
+		  var locations = [
+			['Center Point', {{ center[0] }}, {{ center[1] }}, 2]
 			{% for returnedlocations in returnedlocations %}
 				,
 				['{{ returnedlocations[2] }}',   {{ returnedlocations[0] }}, {{ returnedlocations[1] }}, 1]
 			{% endfor %}
 			{% for selectedlocations in selectedlocations %}
 				,
-				['{{ selectedlocations[2] }}',   {{ selectedlocations[0] }}, {{ selectedlocations[1] }}, 2]
+				['{{ selectedlocations[2] }}',   {{ selectedlocations[0] }}, {{ selectedlocations[1] }}, 0]
 			{% endfor %}
 		  ];
 		var map = new google.maps.Map(document.getElementById('map'), {
@@ -42,16 +42,39 @@
 		var infowindow =  new google.maps.InfoWindow({});
 		var marker, count;
 		var latlngbounds = new google.maps.LatLngBounds();
-		for (count = 0; count < friends.length; count++) {
-			marker = new google.maps.Marker({
-			  position: new google.maps.LatLng(friends[count][1], friends[count][2]),
-			  map: map,
-			  title: friends[count][0]
-			});
-			latlngbounds.extend(marker.position);
+		for (count = 0; count < locations.length; count++) {
+			if(locations[count][3] == 0){
+				marker = new google.maps.Marker({
+				  position: new google.maps.LatLng(locations[count][1], locations[count][2]),
+				  map: map,
+				  title: locations[count][0],
+				  icon: {                             
+					  url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+				  }
+				});
+			}
+			else if(locations[count][3] == 1){
+				marker = new google.maps.Marker({
+				  position: new google.maps.LatLng(locations[count][1], locations[count][2]),
+				  map: map,
+				  title: locations[count][0],
+				  icon: {                             
+					  url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+				  }
+				});
+				latlngbounds.extend(marker.position);
+			}
+			else{
+				marker = new google.maps.Marker({
+				  position: new google.maps.LatLng(locations[count][1], locations[count][2]),
+				  map: map,
+				  title: locations[count][0]
+				});
+				latlngbounds.extend(marker.position);
+			}
 			google.maps.event.addListener(marker, 'click', (function (marker, count) {
 			  return function () {
-				infowindow.setContent(friends[count][0]);
+				infowindow.setContent(locations[count][0]);
 				infowindow.open(map, marker);
 			  }
 			})(marker, count));
@@ -115,7 +138,7 @@
 						
 						  <input type="text" id="activity" name="activity" placeholder="Type of Activity"><br><br>
 						  <label for="time">Time to Meet:</label>
-						  <input type="time" id="time" name="time" required><br><br>
+						  <input type="time" id="time" name="time" value="16:00" required><br><br>
 						  <input type="submit" value="Submit">
 					</div>
 				</div>
