@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = '', api_key = api_key, center = '')
+    return render_template('index.html', friends = friends, nearby_results = '', api_key = api_key, center = '', locations = '', selectedlocations = '')
 
 @app.route('/placesearch', methods=['POST'])
 def placesearch():
@@ -21,6 +21,7 @@ def placesearch():
         activity = ''
     time = request.form['time']
     locations = []
+    locationswithuser = []
     for i in range(0,1000):
         current = 'friendaddress' + str(i)
         if current in request.form:
@@ -28,7 +29,8 @@ def placesearch():
             temp = temp.split(",")
             temp[0] = float(temp[0])
             temp[1] = float(temp[1])
-            locations.append(temp)
+            locations.append(temp[:2])
+            locationswithuser.append(temp)
     #get the center coords of the addresses
     center_coords = get_geocenter(locations)
     print("Coords: ", center_coords)
@@ -69,11 +71,11 @@ def placesearch():
     for results in results:
         nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating')])
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, api_key = api_key, center = center_coords)
+    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, api_key = api_key, center = center_coords, selectedlocations = locationswithuser)
 
 def get_friends_list():
     dbconnect = get_db_connection()
-    friends = dbconnect.execute('SELECT * FROM users').fetchall()
+    friends = dbconnect.execute('SELECT username, address, latitude, longitude FROM users').fetchall()
     dbconnect.close()
     return friends
 
