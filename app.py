@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = '', api_key = api_key, center = '', locations = '', selectedlocations = '')
+    return render_template('index.html', friends = friends, nearby_results = '', api_key = api_key, center = '', locations = '', selectedlocations = '', returnedlocations = '')
 
 @app.route('/placesearch', methods=['POST'])
 def placesearch():
@@ -68,10 +68,14 @@ def placesearch():
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
     #end of while
     nearby_results_filtered = []
+    nearby_results_for_marker = []
     for results in results:
         nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating')])
+        resultsgeo = results.get('geometry')
+        resultsgeo = resultsgeo.get('location')
+        nearby_results_for_marker.append([resultsgeo.get('lat'), resultsgeo.get('lng'), results.get('name')])
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, api_key = api_key, center = center_coords, selectedlocations = locationswithuser)
+    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, api_key = api_key, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
 
 def get_friends_list():
     dbconnect = get_db_connection()

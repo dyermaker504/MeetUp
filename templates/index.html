@@ -25,11 +25,14 @@
 		function initMap() {
 		  var center = {lat: {{ center[0] }}, lng: {{ center[1] }}};
 		  var friends = [
-			['Center Point', {{ center[0] }}, {{ center[1] }}],
-			['{{ selectedlocations[0][2] }}',   {{ selectedlocations[0][0]}}, {{ selectedlocations[0][1] }}]
-			{% for selectedlocations in selectedlocations[1:] %}
+			['Center Point', {{ center[0] }}, {{ center[1] }}, 0]
+			{% for returnedlocations in returnedlocations %}
 				,
-				['{{ selectedlocations[2] }}',   {{ selectedlocations[0] }}, {{ selectedlocations[1] }}]
+				['{{ returnedlocations[2] }}',   {{ returnedlocations[0] }}, {{ returnedlocations[1] }}, 1]
+			{% endfor %}
+			{% for selectedlocations in selectedlocations %}
+				,
+				['{{ selectedlocations[2] }}',   {{ selectedlocations[0] }}, {{ selectedlocations[1] }}, 2]
 			{% endfor %}
 		  ];
 		var map = new google.maps.Map(document.getElementById('map'), {
@@ -52,8 +55,8 @@
 				infowindow.open(map, marker);
 			  }
 			})(marker, count));
-			map.fitBounds(latlngbounds);
 		  }
+		map.fitBounds(latlngbounds);
 		}
 	</script>
 	{% endif %}
