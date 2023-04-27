@@ -126,18 +126,22 @@ def process_input():
     search_radius = min_radius
     radius_grow_rate = 1 
     radius_grow_rate_min = 0.1 #for rate scaling
+    safety_counter = 1
     
     search_success = False
     while not search_success:
+        if safety_counter > 20:
+            print("Something's wrong with the loop.")
+            break
         nearby_results = gmaps.places_nearby(center_coords, search_radius, keyword = keyword, open_now=currently_open)
         #check the status
         query_status = nearby_results['status']   
-        if query_status == "ZERO_RESULTS":
-            search_radius += search_radius*radius_grow_rate
-        elif search_radius >= max_radius:
+        if search_radius >= max_radius:
             #try an error
             raise Exception("Max search radius exceeded")
             break #out of the
+        elif query_status == "ZERO_RESULTS":
+            search_radius += search_radius*radius_grow_rate
         else:
             results = nearby_results.get('results')
             results_cnt = len(results)
@@ -150,6 +154,7 @@ def process_input():
         if radius_grow_rate > radius_grow_rate_min: 
             radius_grow_rate -= radius_grow_rate/10  #dynamically shrink rate as radius grows larger
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
+        safety_counter += 1
     #end of while
 
 
@@ -216,5 +221,5 @@ def get_coords(geo_address):
   return coords
 
 #Client API key
-api_key = "AIzaSyAjaIAjo2SAuqzSqFSjNDcyM_vUQgagA6c"
+api_key = "AIzaSyCQHMg2sZwnUTRQavAXTYhqv7BGzl7j2EQ"
 gmaps = googlemaps.Client(key=api_key)
