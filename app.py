@@ -50,7 +50,7 @@ def placesearch():
             #try an error
             raise Exception("Max search radius exceeded")
             break #out of the
-        if safety_counter > 20:
+        if safety_counter > 12:
             print("Something's wrong with the loop.")
             break
         nearby_results = gmaps.places_nearby(center_coords, search_radius, keyword = activity, open_now=True)
@@ -76,12 +76,13 @@ def placesearch():
     nearby_results_filtered = []
     nearby_results_for_marker = []
     for results in results:
-        nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating')])
+        googlesearch = results.get('name') + ' ' + results.get('vicinity')
+        nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating'), googlesearch])
         resultsgeo = results.get('geometry')
         resultsgeo = resultsgeo.get('location')
-        nearby_results_for_marker.append([resultsgeo.get('lat'), resultsgeo.get('lng'), results.get('name')])
+        nearby_results_for_marker.append([resultsgeo.get('lat'), resultsgeo.get('lng'), results.get('name'), results.get('vicinity')])
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, api_key = api_key, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
+    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
 
 def get_friends_list():
     dbconnect = get_db_connection()
