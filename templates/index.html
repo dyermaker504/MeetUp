@@ -83,18 +83,6 @@
 		}
 	</script>
 	{% endif %}
-	<script>
-		$(function(){     
-		  var d = new Date(),        
-			  h = d.getHours(),
-			  m = d.getMinutes();
-		  if(h < 10) h = '0' + h; 
-		  if(m < 10) m = '0' + m; 
-		  $('input[type="time"][value="now"]').each(function(){ 
-			$(this).attr({'value': h + ':' + m});
-		  });
-		});
-	</script>
 	<script async defer
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4xstXxgMSQZP-Qr0mNdjmoyz0GvRruSg&callback=initMap">
 	</script>
@@ -139,10 +127,7 @@
 						{% endfor %}
 					</div>
 					<div class="SearchArea">
-						
 						  <input type="text" id="activity" name="activity" placeholder="Type of Activity"><br><br>
-						  <label for="time">Time to Meet:</label>
-						  <input type="time" id="time" name="time" value="now" required><br><br>
 						  <input type="submit" value="Submit">
 					</div>
 				</div>
