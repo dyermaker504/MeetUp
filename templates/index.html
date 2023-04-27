@@ -28,7 +28,7 @@
 			['Center Point', {{ center[0] }}, {{ center[1] }}, 2]
 			{% for returnedlocations in returnedlocations %}
 				,
-				['{{ returnedlocations[2] }}',   {{ returnedlocations[0] }}, {{ returnedlocations[1] }}, 1]
+				['<a href="#{{ returnedlocations[2] }}">{{ returnedlocations[2] }}</a>',   {{ returnedlocations[0] }}, {{ returnedlocations[1] }}, 1]
 			{% endfor %}
 			{% for selectedlocations in selectedlocations %}
 				,
@@ -97,23 +97,13 @@
 			<button class="navbutton">Register</button>
 		</div>
 		<div class="MapArea">
-<!--			<iframe
-			  width=100%
-			  height=100%
-			  style="border:0; border-radius: 12px;"
-			  loading="lazy"
-			  referrerpolicy="no-referrer-when-downgrade"
-			  src="https://www.google.com/maps/embed/v1/place?key={{ api_key }}
-				&q={{ center }}">
-			</iframe>
--->
 			{% if center != '' %}
 				<div id="map" style="width: 100%; height: 100%;"></div>
 			{% endif %}
 		</div>
 		<div class="ListArea">
 			{% for nearby_results in nearby_results %}
-				<div class="placebox">
+				<div class="placebox" id="{{ nearby_results[0] }}">
 					<p>{{ nearby_results[0] }}</p>
 					<p>{{ nearby_results[1] }}</p>
 					<p>{{ nearby_results[2] }}</p>
