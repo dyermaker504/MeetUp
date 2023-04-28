@@ -19,10 +19,10 @@ def placesearch():
     activity = request.form['activity']
     if not activity:
         activity = ''
-    time = request.form['time']
     locations = []
     locationswithuser = []
-    for i in range(0,1000):
+    latlnglocations = []
+    for i in range(0,100):
         current = 'friendaddress' + str(i)
         if current in request.form:
             temp = request.form['friendaddress' + str(i)]
@@ -33,6 +33,23 @@ def placesearch():
             locationswithuser.append(temp)
     #get the center coords of the addresses
     center_coords = get_geocenter(locations)
+    for locations in locations:
+        latlngtuple = (locations[0],locations[1])
+        latlnglocations.append(latlngtuple)
+    #return latlnglocations
+    distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=latlngtuple, mode="driving")
+    distance_results = distance_results.get('rows')
+    maxcounter = 0
+    maxdur = 0
+    for results in distance_results:
+        maxcounter += 1
+        tempdur = results.get('elements')
+        tempdur = tempdur[0].get('duration')
+        tempdur = int(tempdur.get('value'))
+        if maxdur < tempdur:
+            maxdur = tempdur
+            farthestuser = maxcounter
+    print(farthestuser)
     #print("Coords: ", center_coords)
     #print("Type: ",type(center_coords))
     #set radius each time it's called
