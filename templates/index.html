@@ -93,8 +93,15 @@
 	<div class="container">
 		<div class="NavArea">
 			<h1 style="display: inline;">Activity Finder</h1>
-			<button class="navbutton">Sign In</button>
-			<button class="navbutton">Register</button>
+			{% if session.get('user_id') %}
+				<form action="{{ url_for('logout') }}" method="POST">
+					<button class="navbutton" type="submit">Logout</button>
+				</form>
+				<a href="/dashboard"><button class="navbutton">Dashboard</button></a>
+			{% else %}
+				<a href="/login"><button class="navbutton">Sign In</button></a>
+				<a href="/register"><button class="navbutton">Register</button></a>
+			{% endif %}
 		</div>
 		<div class="MapArea">
 			{% if center != '' %}
@@ -112,6 +119,7 @@
 				</div>
 			{% endfor %}
 		</div>
+		{% if session.get('user_id') %}
 		<div class="ActionArea">
 			<form action="/placesearch" method="POST" name="placesearch">
 				<div class="containerinner">
@@ -133,6 +141,7 @@
 				</div>
 			</form>
 		</div>
+		{% endif %}
 	</div>
 
 </body>
