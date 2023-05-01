@@ -24,7 +24,7 @@ def placesearch():
     activity = request.form['activity']
     if not activity:
         activity = ''
-    activitytype = request.form['activitytype']
+    activitytype = request.form.get('activitytype')
     if not activitytype:
         activitytype = ''
     locations = []
