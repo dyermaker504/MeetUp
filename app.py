@@ -45,25 +45,25 @@ def placesearch():
             locationswithuser.append(temp)
     #get the center coords of the addresses
     center_coords = get_geocenter(locations)
+    modcenter_coords = []
+    modcenter_coords.append((center_coords[0],center_coords[1]))
     for locations in locations:
         latlngtuple = (locations[0],locations[1])
         latlnglocations.append(latlngtuple)
     #return latlnglocations
-    distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=latlngtuple, mode="driving")
+    distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=modcenter_coords, mode="driving")
     distance_results = distance_results.get('rows')
     maxcounter = 0
     maxdur = 0
     for results in distance_results:
-        maxcounter += 1
         tempdur = results.get('elements')
         tempdur = tempdur[0].get('duration')
         tempdur = int(tempdur.get('value'))
         if maxdur < tempdur:
             maxdur = tempdur
             farthestuser = maxcounter
-    print(farthestuser)
-    #print("Coords: ", center_coords)
-    #print("Type: ",type(center_coords))
+        maxcounter += 1
+    print('User Farthest From Center: ' + str(locationswithuser[farthestuser][2]))
     #set radius each time it's called
     results_min = 10  #how many results
     min_radius = 1000 #meters
@@ -101,7 +101,7 @@ def placesearch():
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
         safety_counter += 1
     #end of while
-    print(safety_counter)
+    print('Api Calls For Current Search: ' + str(safety_counter))
     nearby_results_filtered = []
     nearby_results_for_marker = []
     for results in results:
