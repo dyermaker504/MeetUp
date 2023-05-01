@@ -49,12 +49,23 @@ def placesearch():
             locationswithuser.append(temp)
     #get the center coords of the addresses
     center_coords = get_geocenter(locations)
-    '''
+    avgdist = 0
+    maxdist = 0
     modcenter_coords = []
     modcenter_coords.append((center_coords[0],center_coords[1]))
     for locations in locations:
         latlngtuple = (locations[0],locations[1])
         latlnglocations.append(latlngtuple)
+
+    for locations in latlnglocations:
+        geodesicfind = geodesic(modcenter_coords, locations, ellipsoid='WGS-84').m
+        avgdist += geodesicfind
+        maxdist = max(maxdist,geodesicfind)
+    avgdist /= len(latlnglocations)
+    #outage = str(avgdist) + ' ' + str(maxdist)
+    #return(outage)
+    
+    '''
     distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=modcenter_coords, mode="driving")
     distance_results = distance_results.get('rows')
     maxcounter = 0
@@ -67,13 +78,13 @@ def placesearch():
             maxdur = tempdur
             farthestuser = maxcounter
         maxcounter += 1
-    distancetofurthestuser = str(geodesic(modcenter_coords, latlnglocations[farthestuser], ellipsoid='WGS-84').km)
     print('User Farthest From Center: ' + str(locationswithuser[farthestuser][2]))
     '''
     #set radius each time it's called
     results_min = 10  #how many results
-    min_radius = 10000 #meters
-    max_radius = 60000 #largest it will search
+    min_radius = 5000 #meters
+    radius_baseline = 15000 #meters
+    max_radius = maxdist + radius_baseline #largest it will search
     search_radius = min_radius
     radius_grow_rate = 1 
     radius_grow_rate_min = 0.1 #for rate scaling
@@ -107,7 +118,7 @@ def placesearch():
             radius_grow_rate -= radius_grow_rate/10  #dynamically shrink rate as radius grows larger
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
         safety_counter += 1
-        print('Run: ' + str(safety_counter))
+        #print('Run: ' + str(safety_counter))
     #end of while
     print('Api Calls For Current Search: ' + str(safety_counter))
     nearby_results_filtered = []
