@@ -88,7 +88,7 @@ def placesearch():
     search_radius = min_radius
     radius_grow_rate = 1 
     radius_grow_rate_min = 0.1 #for rate scaling
-    safety_counter = 1
+    safety_counter = 0
     
     search_success = False
     while not search_success:
