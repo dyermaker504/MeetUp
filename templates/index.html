@@ -264,45 +264,51 @@
 	</div>
 	{% if session.get('user_id') %}
 		<div id="id03" class="modal">
-			<div class="containerdashboard">
-				<div class="ActionArea">
-					<h1>Welcome to your Dashboard</h1>
-					<br>
-					<h2>User Information:</h2>
-					<p><strong>Name:</strong> {{ session.get('username') }}</p>
-					<p><strong>Address:</strong> {{ session.get('address') }}</p>
-					<h2>My Friends</h2>
-					{% if friends %}
-					<ul>
-						{% for friend in friends %}
-							<li>{{ friend[0] }}</li>
-						{% endfor %}
-					</ul>
-					{% else %}
-					<p>You don't have any friends yet.</p>
-					{% endif %}
-					<br>
-				</div>
-				<div class="ListArea">
-					<div class="imgcontainer">
-						<span onclick="document.getElementById('id03').style.display='none'" class="close" title="Close Modal">&times;</span>
+			<div class="modal-content animate">
+				<div class="containerdashboard">
+					<div class="ActionArea" style="overflow-y: scroll;">
+						<h1>Welcome to your Dashboard</h1>
+						<br>
+						<h2>User Information:</h2>
+						<p><strong>Name:</strong> {{ session.get('username') }}</p>
+						<p><strong>Address:</strong> {{ session.get('address') }}</p>
+						<h2>My Friends</h2>
+						{% if friends %}
+						<ul>
+							{% for friend in friends %}
+								<li>{{ friend[0] }}</li>
+								<form method="POST" name="remove_friend_{{ friend[0] }}" action="{{ url_for('remove_friend') }}" autocomplete="off">
+									<input type="hidden" id="hiddenfriendname" name="hiddenfriendname" value="{{ friend[0] }}">
+									<span title="Remove Friend" onclick="remove_friend_{{ friend[0] }}.submit()" style="display:inline;">&times;</span>
+								</form>
+							{% endfor %}
+						</ul>
+						{% else %}
+						<p>You don't have any friends yet.</p>
+						{% endif %}
+						<br>
 					</div>
-					<br><br><br><br><br>
-					<h2>Change Address:</h2>
-					<form method="POST" action="{{ url_for('change_address') }}" autocomplete="off">
-						<label>New Address:</label>
-						<input type="text" name="change_address" id="change_address" autocomplete="off" required>
+					<div class="ListArea">
+						<div class="imgcontainer">
+							<span onclick="document.getElementById('id03').style.display='none'" class="close" title="Close Modal">&times;</span>
+						</div>
+						<br><br><br><br><br>
+						<h2>Change Address:</h2>
+						<form method="POST" action="{{ url_for('change_address') }}" autocomplete="off">
+							<label>New Address:</label>
+							<input type="text" name="change_address" id="change_address" autocomplete="off" required>
+							<br>
+							<input type="submit" value="Change Address" class="cabutton">
+						</form>
+						<h2>Add Friend:</h2>
+						<form method="POST" action="{{ url_for('add_friend') }}" autocomplete="off">
+							<label>Friend's Username:</label>
+							<input type="text" name="friend_username" id="friend_username" autocomplete="off" required>
+							<br>
+							<input type="submit" value="Add Friend" class="afbutton">
+						</form>
 						<br>
-						<input type="submit" value="Change Address" class="cabutton">
-					</form>
-					<h2>Add Friend:</h2>
-					<form method="POST" action="{{ url_for('add_friend') }}" autocomplete="off">
-						<label>Friend's Username:</label>
-						<input type="text" name="friend_username" id="friend_username" autocomplete="off" required>
-						<br>
-						<input type="submit" value="Add Friend" class="afbutton">
-					</form>
-					<br>
+					</div>
 				</div>
 			</div>
 		</div>

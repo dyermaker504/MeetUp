@@ -257,6 +257,33 @@ def add_friend():
     flash('Friend added')
     return redirect(url_for('index'))
 
+@app.route('/remove_friend', methods=['POST'])
+def remove_friend():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Get form data
+    friend_username = request.form.get('hiddenfriendname')
+
+    # Find friend user by username
+    dbconnect = get_db_dbconnectection()
+    friend_user = dbconnect.execute('SELECT * FROM users WHERE username = ?', (friend_username,)).fetchone()
+
+    # If friend user not found, display error message
+    if friend_user is None:
+        flash('User not found')
+        return redirect(url_for('index'))
+
+    # Insert friendship into database
+    dbconnect.execute('DELETE FROM friends WHERE user_id = ? AND friend_id = ?', (session['user_id'], friend_user['id']))
+    dbconnect.commit()
+    dbconnect.close()
+
+    # Display success message
+    flash('Friend added')
+    return redirect(url_for('index'))
+
 @app.route('/change_address', methods=['POST'])
 def change_address():
     # Check if user is logged in
