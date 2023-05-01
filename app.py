@@ -194,6 +194,7 @@ def register():
         # Save user id to session
         session['user_id'] = user['id']
         session['username'] = user['username']
+        session['address'] = user['address']
         session['latitude'] = user['latitude']
         session['longitude'] = user['longitude']
         return redirect(url_for('index'))
@@ -217,26 +218,12 @@ def login():
         # Save user id to session
         session['user_id'] = user['id']
         session['username'] = user['username']
+        session['address'] = user['address']
         session['latitude'] = user['latitude']
         session['longitude'] = user['longitude']
         return redirect(url_for('index'))
 
     return render_template('login.html')
-
-# Dashboard route
-@app.route('/dashboard')
-def dashboard():
-    # Check if user is logged in
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    # Get user info from database
-    dbconnect = get_db_dbconnectection()
-    user = dbconnect.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
-    
-    friends = get_friends_list()
-    
-    return render_template('dashboard.html', user=user, friends=friends)
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -259,7 +246,7 @@ def add_friend():
     # If friend user not found, display error message
     if friend_user is None:
         flash('User not found')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
 
     # Insert friendship into database
     dbconnect.execute('INSERT INTO friends (user_id, friend_id) VALUES (?, ?)', (session['user_id'], friend_user['id']))
@@ -268,7 +255,7 @@ def add_friend():
 
     # Display success message
     flash('Friend added')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('index'))
 
 @app.route('/change_address', methods=['POST'])
 def change_address():
@@ -293,6 +280,8 @@ def change_address():
     dbconnect.commit()
     dbconnect.close()
 
+    session['address'] = address
+
     # Display success message
     flash('Address Changed')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('index'))

@@ -53,6 +53,14 @@
             }
         }
     </script>
+    <script>
+        var modal = document.getElementById('id03');
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 	{% endif %}
 	{% if center != '' %}
 	<script type="text/javascript">
@@ -131,7 +139,7 @@
 				<form action="{{ url_for('logout') }}" method="POST" style="display: inline;">
 					<button class="navbutton" type="submit">Logout</button>
 				</form>
-				<a href="/dashboard"><button class="navbutton">Dashboard</button></a>
+				<button class="navbutton" onclick="document.getElementById('id03').style.display='block'">Dashboard</button>
 				<a href="/"><button class="navbutton">Search</button></a>
 			{% else %}
 				<button class="navbutton" onclick="document.getElementById('id01').style.display='block'">Sign In</button>
@@ -254,43 +262,89 @@
 		</div>
 		{% endif %}
 	</div>
-    <div id="id01" class="modal">
-        <form class="modal-content animate" method="POST" action="{{ url_for('login') }}">
-            <div class="imgcontainer">
-                <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-            </div>
-            <div class="containermodal">
-                <label><b>Username</b></label>
-                <input type="text" placeholder="Enter Username" name="username" required>
- 
-                <label><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="password" required>
- 
-                <button type="submit">Login</button>
-            </div>
-            <div class="containermodal" style="background-color:#f1f1f1">
-                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-            </div>
-        </form>
-    </div>
-    <div id="id02" class="modal">
-        <form class="modal-content animate" method="POST" action="{{ url_for('register') }}">
-            <div class="imgcontainer">
-                <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
-            </div>
-            <div class="containermodal">
-                <label><b>Username</b></label>
-                <input type="text" placeholder="Enter Username" name="regusername" required>
- 
-                <label><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="regpassword" required>
+	{% if session.get('user_id') %}
+		<div id="id03" class="modal">
+			<div class="containerdashboard">
+				<div class="ActionArea">
+					<h1>Welcome to your Dashboard</h1>
+					<br>
+					<h2>User Information:</h2>
+					<p><strong>Name:</strong> {{ session.get('username') }}</p>
+					<p><strong>Address:</strong> {{ session.get('address') }}</p>
+					<h2>My Friends</h2>
+					{% if friends %}
+					<ul>
+						{% for friend in friends %}
+							<li>{{ friend[0] }}</li>
+						{% endfor %}
+					</ul>
+					{% else %}
+					<p>You don't have any friends yet.</p>
+					{% endif %}
+					<br>
+				</div>
+				<div class="ListArea">
+					<div class="imgcontainer">
+						<span onclick="document.getElementById('id03').style.display='none'" class="close" title="Close Modal">&times;</span>
+					</div>
+					<br><br><br><br><br><br>
+					<h2>Change Address:</h2>
+					<form method="POST" action="{{ url_for('change_address') }}" autocomplete="off">
+						<label>New Address:</label>
+						<input type="text" name="change_address" id="change_address" autocomplete="off" required>
+						<br>
+						<input type="submit" value="Change Address" class="cabutton">
+					</form>
+					<h2>Add Friend:</h2>
+					<form method="POST" action="{{ url_for('add_friend') }}" autocomplete="off">
+						<label>Friend's Username:</label>
+						<input type="text" name="friend_username" id="friend_username" autocomplete="off" required>
+						<br>
+						<input type="submit" value="Add Friend" class="afbutton">
+					</form>
+					<br>
+				</div>
+			</div>
+		</div>
+	{% else %}
+		<div id="id01" class="modal">
+			<form class="modal-content animate" method="POST" action="{{ url_for('login') }}">
+				<div class="imgcontainer">
+					<span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+				</div>
+				<div class="containermodal">
+					<label><b>Username</b></label>
+					<input type="text" placeholder="Enter Username" name="username" required>
+	 
+					<label><b>Password</b></label>
+					<input type="password" placeholder="Enter Password" name="password" required>
+	 
+					<button type="submit">Login</button>
+				</div>
+				<div class="containermodal" style="background-color:#f1f1f1">
+					<button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+				</div>
+			</form>
+		</div>
+		<div id="id02" class="modal">
+			<form class="modal-content animate" method="POST" action="{{ url_for('register') }}">
+				<div class="imgcontainer">
+					<span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+				</div>
+				<div class="containermodal">
+					<label><b>Username</b></label>
+					<input type="text" placeholder="Enter Username" name="regusername" required>
+	 
+					<label><b>Password</b></label>
+					<input type="password" placeholder="Enter Password" name="regpassword" required>
 
-                <label><b>Address</b></label>
-                <input type="text" placeholder="Enter Address" name="address" required>
+					<label><b>Address</b></label>
+					<input type="text" placeholder="Enter Address" name="address" required>
 
-                <button type="submit">Register</button>
-            </div>
-        </form>
-    </div>
+					<button type="submit">Register</button>
+				</div>
+			</form>
+		</div>
+	{% endif %}
 </body>
 </html>
