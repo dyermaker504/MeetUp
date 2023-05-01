@@ -23,7 +23,7 @@
 .containerdashboard {
 	display: grid;
 	grid-template-columns: 40vw 40vw;
-	grid-template-rows: 65vh;
+	grid-template-rows: 60vh;
 	gap: 0px 0px;
 	grid-auto-flow: row;
 	grid-template-areas:
