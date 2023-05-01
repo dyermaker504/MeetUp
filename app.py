@@ -1,4 +1,5 @@
 import sqlite3, requests, json, googlemaps, numpy as np, sys, urllib.parse
+from geopy.distance import geodesic
 from flask import Flask, render_template, request, session, flash, g, current_app, redirect, url_for
 from datetime import datetime
 
@@ -50,7 +51,7 @@ def placesearch():
     for locations in locations:
         latlngtuple = (locations[0],locations[1])
         latlnglocations.append(latlngtuple)
-    #return latlnglocations
+    
     distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=modcenter_coords, mode="driving")
     distance_results = distance_results.get('rows')
     maxcounter = 0
@@ -63,6 +64,7 @@ def placesearch():
             maxdur = tempdur
             farthestuser = maxcounter
         maxcounter += 1
+    distancetofurthestuser = str(geodesic(modcenter_coords, latlnglocations[farthestuser], ellipsoid='WGS-84').km)
     print('User Farthest From Center: ' + str(locationswithuser[farthestuser][2]))
     #set radius each time it's called
     results_min = 10  #how many results
