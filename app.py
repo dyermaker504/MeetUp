@@ -11,8 +11,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    if 'user_id' in session:
+        hiddenusername = session['latitude'] + ',' + session['longitude'] + ',' + session['username']
+    else:
+        hiddenusername = ''
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = '', api_key = api_key, center = '', locations = '', selectedlocations = '', returnedlocations = '')
+    return render_template('index.html', friends = friends, hiddenusername = hiddenusername, nearby_results = '', api_key = api_key, center = '', locations = '', selectedlocations = '', returnedlocations = '')
 
 @app.route('/placesearch', methods=['POST'])
 def placesearch():
@@ -22,6 +26,14 @@ def placesearch():
     locations = []
     locationswithuser = []
     latlnglocations = []
+    
+    temp = request.form['hiddenusername']
+    temp = temp.split(",")
+    temp[0] = float(temp[0])
+    temp[1] = float(temp[1])
+    locations.append(temp[:2])
+    locationswithuser.append(temp)
+    
     for i in range(0,100):
         current = 'friendaddress' + str(i)
         if current in request.form:
@@ -54,7 +66,7 @@ def placesearch():
     #print("Type: ",type(center_coords))
     #set radius each time it's called
     results_min = 10  #how many results
-    min_radius = 500 #meters
+    min_radius = 1000 #meters
     max_radius = 60000 #largest it will search
     search_radius = min_radius
     radius_grow_rate = 1 
@@ -67,7 +79,7 @@ def placesearch():
             #try an error
             raise Exception("Max search radius exceeded")
             break #out of the
-        if safety_counter > 12:
+        if safety_counter > 9:
             print("Something's wrong with the loop.")
             break
         nearby_results = gmaps.places_nearby(center_coords, search_radius, keyword = activity, open_now=True)
@@ -87,9 +99,9 @@ def placesearch():
         if radius_grow_rate > radius_grow_rate_min: 
             radius_grow_rate -= radius_grow_rate/10  #dynamically shrink rate as radius grows larger
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
-        print(safety_counter)
         safety_counter += 1
     #end of while
+    print(safety_counter)
     nearby_results_filtered = []
     nearby_results_for_marker = []
     for results in results:
@@ -172,6 +184,9 @@ def register():
         dbconnect.close()
         # Save user id to session
         session['user_id'] = user['id']
+        session['username'] = user['username']
+        session['latitude'] = user['latitude']
+        session['longitude'] = user['longitude']
         return redirect(url_for('index'))
 
     return render_template('register.html')
@@ -192,6 +207,9 @@ def login():
 
         # Save user id to session
         session['user_id'] = user['id']
+        session['username'] = user['username']
+        session['latitude'] = user['latitude']
+        session['longitude'] = user['longitude']
         return redirect(url_for('index'))
 
     return render_template('login.html')
