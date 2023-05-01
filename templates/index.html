@@ -20,6 +20,21 @@
 			});
 		});
 	</script>
+    <script>
+		$(document).ready(function() {
+		   $('input[type="radio"]').click(function() {
+			   if($(this).attr('id') == 'customradio') {
+					$('#activity').show();
+					$('#customradio').hide();
+			   }
+
+			   else {
+					$('#activity').hide();
+					$('#customradio').show();
+			   }
+		   });
+		});
+    </script>
 	{% if session.get('user_id') %}
     <script>
         var modal = document.getElementById('id01');
@@ -46,7 +61,7 @@
 			['Center Point', {{ center[0] }}, {{ center[1] }}, 2]
 			{% for returnedlocations in returnedlocations %}
 				,
-				['<a href="#{{ returnedlocations[2] }}">{{ returnedlocations[2] }}</a><p>{{ returnedlocations[3] }}</p>',   {{ returnedlocations[0] }}, {{ returnedlocations[1] }}, 1]
+				['<a href="#{{ returnedlocations[2] }}">{{ returnedlocations[2] }}</a><p>{{ returnedlocations[3] }}</p><a href="https://www.google.com/search?q={{ returnedlocations[4] }}">Go to Google Search for more info.</a>',   {{ returnedlocations[0] }}, {{ returnedlocations[1] }}, 1]
 			{% endfor %}
 			{% for selectedlocations in selectedlocations %}
 				,
@@ -154,9 +169,84 @@
 						{% endfor %}
 					</div>
 					<div class="SearchArea">
-						<input type="text" id="activity" name="activity" placeholder="Type of Activity"><br><br>
+						<div class="typelistcontainer">
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="bar"/>
+									<span class="typelistbutton">Bar</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="cafe"/>
+									<span class="typelistbutton">Cafe</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="clothing_store"/>
+									<span class="typelistbutton">Clothing Store</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="department_store"/>
+									<span class="typelistbutton">Department Store</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="gym"/>
+									<span class="typelistbutton">Gym</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="hair_care"/>
+									<span class="typelistbutton">Hair Stylist</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="park"/>
+									<span class="typelistbutton">Park</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="restaurant"/>
+									<span class="typelistbutton">Restaurant</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="beauty_salon"/>
+									<span class="typelistbutton">Salon</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="shoe_store"/>
+									<span class="typelistbutton">Shoe Store</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="shopping_mall"/>
+									<span class="typelistbutton">Shopping Mall</span>
+								<label/>
+							</span>
+							<span style="display: inline;" class="friendclass">
+								<label>
+									<input class="typeboxes" type="radio" name="activitytype" value="tourist_attraction"/>
+									<span class="typelistbutton">Tourist Attraction</span>
+								<label/>
+							</span>
+						</div>
+						<input class="typeboxes" type="radio" id="customradio" name="activitytype" value="">Custom Input</input>
+						<input type="text" id="activity" name="activity" placeholder="Type of Activity" value=""><br>
 						<input type="hidden" id="hiddenusername" name="hiddenusername" value="{{ hiddenusername }}">
-						<input type="submit" value="Submit">
+						<input type="submit" value="Submit" class="submitsearchbutton">
 					</div>
 				</div>
 			</form>
@@ -164,12 +254,10 @@
 		{% endif %}
 	</div>
     <div id="id01" class="modal">
- 
         <form class="modal-content animate" method="POST" action="{{ url_for('login') }}">
             <div class="imgcontainer">
                 <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
             </div>
- 
             <div class="containermodal">
                 <label><b>Username</b></label>
                 <input type="text" placeholder="Enter Username" name="username" required>
@@ -179,19 +267,16 @@
  
                 <button type="submit">Login</button>
             </div>
- 
             <div class="containermodal" style="background-color:#f1f1f1">
                 <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
             </div>
         </form>
     </div>
     <div id="id02" class="modal">
- 
         <form class="modal-content animate" method="POST" action="{{ url_for('register') }}">
             <div class="imgcontainer">
                 <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
             </div>
- 
             <div class="containermodal">
                 <label><b>Username</b></label>
                 <input type="text" placeholder="Enter Username" name="regusername" required>
@@ -203,10 +288,6 @@
                 <input type="text" placeholder="Enter Address" name="address" required>
 
                 <button type="submit">Register</button>
-            </div>
- 
-            <div class="containermodal" style="background-color:#f1f1f1">
-                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
             </div>
         </form>
     </div>

@@ -89,11 +89,31 @@
 	box-shadow: 0px -2px 2px rgba(34,34,34,0.6);
 }
 
+.typelistbutton {
+	background-color: #04AA6D;
+	border: none;
+	color: white;
+	width: 23%;
+	height: 1.5vh;
+	padding: 1.5vh;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 1% 1%;
+	border-radius: 12px;
+	box-shadow: 0px -2px 2px rgba(34,34,34,0.6);
+}
+
 .friendclass input {
 	display: none;
 }
 
 .friendclass input:checked + .friendbutton {
+	background: red;
+}
+
+.friendclass input:checked + .typelistbutton {
 	background: red;
 }
 
@@ -152,11 +172,33 @@
 	box-shadow: 0px -2px 2px rgba(34,34,34,0.6);
 }
 
+.submitsearchbutton {
+	background-color: #04AA6D;
+	border: none;
+	color: white;
+	width: 25%;
+	padding: .5vh;
+	float: right;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: .35% .1%;
+	border-radius: 12px;
+	box-shadow: 0px -2px 2px rgba(34,34,34,0.6);
+}
+
 .mapfillerimage {
 	width: 100%;
 	height: auto;
 }
 
+.typelistcontainer {
+	border:2px solid #ccc;
+	width:100%;
+	height: 50%;
+	overflow-y: scroll;
+}
 
 /*assign full width inputs*/
 input[type=text],
@@ -167,6 +209,10 @@ input[type=password] {
 	display: inline-block;
 	border: 1px solid #ccc;
 	box-sizing: border-box;
+}
+
+#activity {
+	display:none;
 }
 
 /*set a style for the buttons*/

@@ -24,6 +24,9 @@ def placesearch():
     activity = request.form['activity']
     if not activity:
         activity = ''
+    activitytype = request.form['activitytype']
+    if not activitytype:
+        activitytype = ''
     locations = []
     locationswithuser = []
     latlnglocations = []
@@ -46,12 +49,12 @@ def placesearch():
             locationswithuser.append(temp)
     #get the center coords of the addresses
     center_coords = get_geocenter(locations)
+    '''
     modcenter_coords = []
     modcenter_coords.append((center_coords[0],center_coords[1]))
     for locations in locations:
         latlngtuple = (locations[0],locations[1])
         latlnglocations.append(latlngtuple)
-    
     distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=modcenter_coords, mode="driving")
     distance_results = distance_results.get('rows')
     maxcounter = 0
@@ -66,9 +69,10 @@ def placesearch():
         maxcounter += 1
     distancetofurthestuser = str(geodesic(modcenter_coords, latlnglocations[farthestuser], ellipsoid='WGS-84').km)
     print('User Farthest From Center: ' + str(locationswithuser[farthestuser][2]))
+    '''
     #set radius each time it's called
     results_min = 10  #how many results
-    min_radius = 1000 #meters
+    min_radius = 10000 #meters
     max_radius = 60000 #largest it will search
     search_radius = min_radius
     radius_grow_rate = 1 
@@ -84,7 +88,8 @@ def placesearch():
         if safety_counter > 9:
             print("Something's wrong with the loop.")
             break
-        nearby_results = gmaps.places_nearby(center_coords, search_radius, keyword = activity, open_now=True)
+        #print(center_coords, search_radius, activity)
+        nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=True)
         #check the status
         query_status = nearby_results['status']   
         if query_status == "ZERO_RESULTS":
@@ -102,6 +107,7 @@ def placesearch():
             radius_grow_rate -= radius_grow_rate/10  #dynamically shrink rate as radius grows larger
             #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
         safety_counter += 1
+        print('Run: ' + str(safety_counter))
     #end of while
     print('Api Calls For Current Search: ' + str(safety_counter))
     nearby_results_filtered = []
@@ -112,9 +118,10 @@ def placesearch():
         nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating'), googlesearch])
         resultsgeo = results.get('geometry')
         resultsgeo = resultsgeo.get('location')
-        nearby_results_for_marker.append([resultsgeo.get('lat'), resultsgeo.get('lng'), results.get('name'), results.get('vicinity')])
+        nearby_results_for_marker.append([resultsgeo.get('lat'), resultsgeo.get('lng'), results.get('name'), results.get('vicinity'), googlesearch])
     friends = get_friends_list()
-    return render_template('index.html', friends = friends, nearby_results = nearby_results_filtered, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
+    hiddenusername = session['latitude'] + ',' + session['longitude'] + ',' + session['username']
+    return render_template('index.html', friends = friends, hiddenusername = hiddenusername, nearby_results = nearby_results_filtered, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
 
 def get_friends_list():
     if 'user_id' in session:
