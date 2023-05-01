@@ -150,17 +150,14 @@ def get_db_dbconnectection():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['regusername']
         address = request.form['address']
-        password = request.form['password']
+        password = request.form['regpassword']
         
         googlelatlng = gmaps.geocode(address=address)
         googlelatlng = googlelatlng[0].get('geometry')
         googlelatlng = googlelatlng.get('location')
         googlelatlng = [googlelatlng['lat'],googlelatlng['lng']]
-
-        #Here I figure we convert address to coords and save in users, for long,lat
-        #didn't wannna make the requests during testing here
 
         # Check if username already exists
         dbconnect = get_db_dbconnectection()
@@ -171,9 +168,11 @@ def register():
         # Insert new user into database
         dbconnect.execute('INSERT INTO users (username, address, password, latitude, longitude) VALUES (?, ?, ?, ?, ?)', (username, address, password, googlelatlng[0], googlelatlng[1]))
         dbconnect.commit()
+        user = dbconnect.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
         dbconnect.close()
-        
-        return redirect(url_for('login'))
+        # Save user id to session
+        session['user_id'] = user['id']
+        return redirect(url_for('index'))
 
     return render_template('register.html')
 
@@ -193,7 +192,7 @@ def login():
 
         # Save user id to session
         session['user_id'] = user['id']
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
 
     return render_template('login.html')
 
