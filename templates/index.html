@@ -287,7 +287,7 @@
 					<div class="imgcontainer">
 						<span onclick="document.getElementById('id03').style.display='none'" class="close" title="Close Modal">&times;</span>
 					</div>
-					<br><br><br><br><br><br>
+					<br><br><br><br><br>
 					<h2>Change Address:</h2>
 					<form method="POST" action="{{ url_for('change_address') }}" autocomplete="off">
 						<label>New Address:</label>
@@ -322,7 +322,7 @@
 					<button type="submit">Login</button>
 				</div>
 				<div class="containermodal" style="background-color:#f1f1f1">
-					<button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+					<button type="button" onclick="document.getElementById('id01').style.display='none';document.getElementById('id02').style.display='block';" class="cancelbtn">Register</button>
 				</div>
 			</form>
 		</div>
