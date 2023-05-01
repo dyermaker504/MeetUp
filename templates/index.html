@@ -94,10 +94,11 @@
 		<div class="NavArea">
 			<h1 style="display: inline;">Activity Finder</h1>
 			{% if session.get('user_id') %}
-				<form action="{{ url_for('logout') }}" method="POST">
+				<form action="{{ url_for('logout') }}" method="POST" style="display: inline;">
 					<button class="navbutton" type="submit">Logout</button>
 				</form>
 				<a href="/dashboard"><button class="navbutton">Dashboard</button></a>
+				<a href="/"><button class="navbutton">Search</button></a>
 			{% else %}
 				<a href="/login"><button class="navbutton">Sign In</button></a>
 				<a href="/register"><button class="navbutton">Register</button></a>
