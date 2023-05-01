@@ -88,7 +88,7 @@ def placesearch():
         if safety_counter > 9:
             print("Something's wrong with the loop.")
             break
-        #print(center_coords, search_radius, activity)
+        #print(center_coords, search_radius, activity, activitytype)
         nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=True)
         #check the status
         query_status = nearby_results['status']   
