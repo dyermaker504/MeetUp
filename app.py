@@ -27,6 +27,13 @@ def placesearch():
     activitytype = request.form.get('activitytype')
     if not activitytype:
         activitytype = ''
+    else:
+        activitytype = activitytype.split(',')
+        if int(activitytype[0]) == 1:
+            activity = activitytype[1]
+            activitytype = ''
+        else:
+            activitytype = activitytype[1]
     locations = []
     locationswithuser = []
     latlnglocations = []
@@ -99,7 +106,7 @@ def placesearch():
         if safety_counter > 9:
             print("Something's wrong with the loop.")
             break
-        #print(center_coords, search_radius, activity, activitytype)
+        #print(center_coords, search_radius, 'text', activity, 'type', activitytype)
         nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=True)
         #check the status
         query_status = nearby_results['status']   
@@ -292,7 +299,7 @@ def remove_friend():
     dbconnect.close()
 
     # Display success message
-    flash('Friend added')
+    flash('Friend removed')
     return redirect(url_for('index'))
 
 @app.route('/change_address', methods=['POST'])
@@ -319,6 +326,8 @@ def change_address():
     dbconnect.close()
 
     session['address'] = address
+    session['latitude'] = googlelatlng[0]
+    session['longitude'] = googlelatlng[1]
 
     # Display success message
     flash('Address Changed')
