@@ -141,6 +141,128 @@ def placesearch():
     hiddenusername = session['latitude'] + ',' + session['longitude'] + ',' + session['username']
     return render_template('index.html', friends = friends, hiddenusername = hiddenusername, nearby_results = nearby_results_filtered, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
 
+@app.route('/returnplacesearch', methods=['POST'])
+def returnplacesearch():
+    activity = request.form['activity']
+    if not activity:
+        activity = ''
+    activitytype = request.form.get('activitytype')
+    if not activitytype:
+        activitytype = ''
+    else:
+        activitytype = activitytype.split(',')
+        if int(activitytype[0]) == 1:
+            activity = activitytype[1]
+            activitytype = ''
+        else:
+            activitytype = activitytype[1]
+    locations = []
+    locationswithuser = []
+    latlnglocations = []
+    
+    temp = request.form['hiddenusername']
+    temp = temp.split(",")
+    temp[0] = float(temp[0])
+    temp[1] = float(temp[1])
+    locations.append(temp[:2])
+    locationswithuser.append(temp)
+    
+    for i in range(0,100):
+        current = 'friendaddress' + str(i)
+        if current in request.form:
+            temp = request.form['friendaddress' + str(i)]
+            temp = temp.split(",")
+            temp[0] = float(temp[0])
+            temp[1] = float(temp[1])
+            locations.append(temp[:2])
+            locationswithuser.append(temp)
+    #get the center coords of the addresses
+    center_coords = get_geocenter(locations)
+    avgdist = 0
+    maxdist = 0
+    modcenter_coords = []
+    modcenter_coords.append((center_coords[0],center_coords[1]))
+    for locations in locations:
+        latlngtuple = (locations[0],locations[1])
+        latlnglocations.append(latlngtuple)
+
+    for locations in latlnglocations:
+        geodesicfind = geodesic(modcenter_coords, locations, ellipsoid='WGS-84').m
+        avgdist += geodesicfind
+        maxdist = max(maxdist,geodesicfind)
+    avgdist /= len(latlnglocations)
+    #outage = str(avgdist) + ' ' + str(maxdist)
+    #return(outage)
+    
+    '''
+    distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=modcenter_coords, mode="driving")
+    distance_results = distance_results.get('rows')
+    maxcounter = 0
+    maxdur = 0
+    for results in distance_results:
+        tempdur = results.get('elements')
+        tempdur = tempdur[0].get('duration')
+        tempdur = int(tempdur.get('value'))
+        if maxdur < tempdur:
+            maxdur = tempdur
+            farthestuser = maxcounter
+        maxcounter += 1
+    print('User Farthest From Center: ' + str(locationswithuser[farthestuser][2]))
+    '''
+    #set radius each time it's called
+    results_min = 10  #how many results
+    min_radius = 5000 #meters
+    radius_baseline = 15000 #meters
+    max_radius = maxdist + radius_baseline #largest it will search
+    search_radius = min_radius
+    radius_grow_rate = 1 
+    radius_grow_rate_min = 0.1 #for rate scaling
+    safety_counter = 0
+    
+    search_success = False
+    while not search_success:
+        if search_radius >= max_radius:
+            #try an error
+            raise Exception("Max search radius exceeded")
+            break #out of the
+        if safety_counter > 9:
+            print("Something's wrong with the loop.")
+            break
+        #print(center_coords, search_radius, 'text', activity, 'type', activitytype)
+        nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=True)
+        #check the status
+        query_status = nearby_results['status']   
+        if query_status == "ZERO_RESULTS":
+            search_radius += search_radius*radius_grow_rate
+        else:
+            results = nearby_results.get('results')
+            results_cnt = len(results)
+            #check how many results were returned
+            if results_cnt < results_min: #not enough results, grow radius
+                search_radius += search_radius*radius_grow_rate
+            else: #we have have enough
+                search_success = True
+        #scaling radius rate is working
+        if radius_grow_rate > radius_grow_rate_min: 
+            radius_grow_rate -= radius_grow_rate/10  #dynamically shrink rate as radius grows larger
+            #print("radius grow rate ",radius_grow_rate, "rate min ", radius_grow_rate_min)
+        safety_counter += 1
+        #print('Run: ' + str(safety_counter))
+    #end of while
+    print('Api Calls For Current Search: ' + str(safety_counter))
+    nearby_results_filtered = []
+    nearby_results_for_marker = []
+    for results in results:
+        googlesearch = results.get('name') + ' ' + results.get('vicinity')
+        googlesearch = urllib.parse.quote_plus(googlesearch)
+        nearby_results_filtered.append([results.get('name'), results.get('vicinity'), results.get('rating'), googlesearch])
+        resultsgeo = results.get('geometry')
+        resultsgeo = resultsgeo.get('location')
+        nearby_results_for_marker.append([resultsgeo.get('lat'), resultsgeo.get('lng'), results.get('name'), results.get('vicinity'), googlesearch])
+    friends = get_friends_list()
+    hiddenusername = session['latitude'] + ',' + session['longitude'] + ',' + session['username']
+    return render_template('index.html', friends = friends, hiddenusername = hiddenusername, nearby_results = nearby_results_filtered, center = center_coords, selectedlocations = locationswithuser, returnedlocations = nearby_results_for_marker)
+
 def get_friends_list():
     if 'user_id' in session:
         dbconnect = get_db_connection()

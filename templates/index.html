@@ -125,6 +125,39 @@
 		}
 	</script>
 	{% endif %}
+    <script type = "text/javascript">
+      window.onload = function() {
+        const mainForm = document.getElementById("placesearch")
+        const mainList = document.getElementById("FoundListArea")
+        mainForm.onsubmit = function(event) {
+          event.preventDefault();
+          fetch("/returnplacesearch", {
+            method: "POST"
+			data: new URLSearchParams(new FormData(formElement))
+          })
+          .then(response => {
+            return response.blob();
+          })
+          .then(data => {
+            let a = document.createElement("a");
+            a.href = window.URL.createObjectURL(data);
+            a.download = "numbers.txt";
+            a.click();
+          })
+          .then(() => {
+            fetch("/process-list", {
+              method: "GET"
+            })
+            .then(response => {
+              return response.text();
+            })
+            .then(html => {
+              mainList.innerHTML = html
+            })
+          })
+        }
+      }
+    </script>
 	<script async defer
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4xstXxgMSQZP-Qr0mNdjmoyz0GvRruSg&callback=initMap">
 	</script>
@@ -153,7 +186,7 @@
 				<img src="{{ url_for('static', filename= 'img/mapstatic.jpg') }}" class="mapfillerimage"> 
 			{% endif %}
 		</div>
-		<div class="ListArea">
+		<div class="ListArea" id="FoundListArea">
 			{% for nearby_results in nearby_results %}
 				<div class="placebox" id="{{ nearby_results[0] }}">
 					<a href="https://www.google.com/search?q={{ nearby_results[3] }}"><p>{{ nearby_results[0] }}</p></a>
@@ -164,7 +197,7 @@
 		</div>
 		{% if session.get('user_id') %}
 		<div class="ActionArea">
-			<form action="/placesearch" method="POST" name="placesearch">
+			<form action="/placesearch" method="POST" name="placesearch" id="placesearch">
 				<div class="containerinner">
 					<div class="FriendArea">
 						{% for friends in friends %}

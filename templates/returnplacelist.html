@@ -1,0 +1,7 @@
+			{% for nearby_results in nearby_results %}
+				<div class="placebox" id="{{ nearby_results[0] }}">
+					<a href="https://www.google.com/search?q={{ nearby_results[3] }}"><p>{{ nearby_results[0] }}</p></a>
+					<p>{{ nearby_results[1] }}</p>
+					<p>{{ nearby_results[2] }}</p>
+				</div>
+			{% endfor %}
