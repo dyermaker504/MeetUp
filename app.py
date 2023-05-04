@@ -324,10 +324,12 @@ def change_address():
     dbconnect.execute("UPDATE users SET address='%s', latitude='%s', longitude='%s'WHERE id='%s'" % (address, googlelatlng[0], googlelatlng[1], session['user_id']))
     dbconnect.commit()
     dbconnect.close()
+    
+    #return str(googlelatlng[1])
 
     session['address'] = address
-    session['latitude'] = googlelatlng[0]
-    session['longitude'] = googlelatlng[1]
+    session['latitude'] = str(googlelatlng[0])
+    session['longitude'] = str(googlelatlng[1])
 
     # Display success message
     flash('Address Changed')
