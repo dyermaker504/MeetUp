@@ -201,7 +201,7 @@ def register():
         session['longitude'] = user['longitude']
         return redirect(url_for('index'))
 
-    return render_template('register.html')
+    return redirect(url_for('index'))
 
 # Login form route
 @app.route('/login', methods=['GET', 'POST'])
@@ -215,7 +215,7 @@ def login():
         user = dbconnect.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
         dbconnect.close()
         if user is None:
-           return redirect(url_for('register'))
+           return redirect(url_for('index'))
 
         # Save user id to session
         session['user_id'] = user['id']
@@ -225,7 +225,7 @@ def login():
         session['longitude'] = user['longitude']
         return redirect(url_for('index'))
 
-    return render_template('login.html')
+    return redirect(url_for('index'))
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -236,7 +236,7 @@ def logout():
 def add_friend():
     # Check if user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
 
     # Get form data
     friend_username = request.form.get('friend_username')
@@ -263,7 +263,7 @@ def add_friend():
 def remove_friend():
     # Check if user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
 
     # Get form data
     friend_username = request.form.get('hiddenfriendname')
@@ -290,7 +290,7 @@ def remove_friend():
 def change_address():
     # Check if user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
 
     # Get form data
     address = request.form.get('change_address')
