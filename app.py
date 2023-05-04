@@ -107,7 +107,7 @@ def placesearch():
             print("Something's wrong with the loop.")
             break
         #print(center_coords, search_radius, 'text', activity, 'type', activitytype)
-        nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=True)
+        nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=False)
         #check the status
         query_status = nearby_results['status']   
         if query_status == "ZERO_RESULTS":
