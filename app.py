@@ -1,5 +1,6 @@
 import sqlite3, requests, json, googlemaps, numpy as np, sys, urllib.parse
 from geopy.distance import geodesic
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, session, flash, g, current_app, redirect, url_for
 from datetime import datetime
 
@@ -175,7 +176,7 @@ def register():
     if request.method == 'POST':
         username = request.form['regusername']
         address = request.form['address']
-        password = request.form['regpassword']
+        password = generate_password_hash(request.form['regpassword'])
         
         googlelatlng = gmaps.geocode(address=address)
         googlelatlng = googlelatlng[0].get('geometry')
@@ -212,7 +213,11 @@ def login():
 
         # Check if email and password are correct
         dbconnect = get_db_dbconnectection()
-        user = dbconnect.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
+        databasepassword = dbconnect.execute('SELECT password FROM users WHERE username = ?', (username,)).fetchone()
+        if check_password_hash(databasepassword['password'],password):
+            user = dbconnect.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        else:
+            user = None
         dbconnect.close()
         if user is None:
            return redirect(url_for('index'))
