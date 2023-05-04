@@ -71,25 +71,9 @@ def placesearch():
     avgdist /= len(latlnglocations)
     #outage = str(avgdist) + ' ' + str(maxdist)
     #return(outage)
-    
-    '''
-    distance_results = gmaps.distance_matrix(origins=latlnglocations, destinations=modcenter_coords, mode="driving")
-    distance_results = distance_results.get('rows')
-    maxcounter = 0
-    maxdur = 0
-    for results in distance_results:
-        tempdur = results.get('elements')
-        tempdur = tempdur[0].get('duration')
-        tempdur = int(tempdur.get('value'))
-        if maxdur < tempdur:
-            maxdur = tempdur
-            farthestuser = maxcounter
-        maxcounter += 1
-    print('User Farthest From Center: ' + str(locationswithuser[farthestuser][2]))
-    '''
     #set radius each time it's called
     results_min = 10  #how many results
-    min_radius = 5000 #meters
+    min_radius = 1000 #meters
     radius_baseline = 15000 #meters
     max_radius = maxdist + radius_baseline #largest it will search
     search_radius = min_radius
@@ -101,10 +85,10 @@ def placesearch():
     while not search_success:
         if search_radius >= max_radius:
             #try an error
-            raise Exception("Max search radius exceeded")
+            raise Exception("Max search radius exceeded.")
             break #out of the
         if safety_counter > 9:
-            print("Something's wrong with the loop.")
+            raise Exception("Max search radius exceeded or excess looping.")
             break
         #print(center_coords, search_radius, 'text', activity, 'type', activitytype)
         nearby_results = gmaps.places_nearby(center_coords, search_radius, type = activitytype, keyword = activity, open_now=False)
@@ -320,7 +304,7 @@ def change_address():
 
     # Find friend user by username
     dbconnect = get_db_dbconnectection()
-    print("UPDATE users SET address='%s', latitude='%s', longitude='%s'WHERE id='%s'" % (address, googlelatlng[0], googlelatlng[1], session['user_id']))
+    #print("UPDATE users SET address='%s', latitude='%s', longitude='%s'WHERE id='%s'" % (address, googlelatlng[0], googlelatlng[1], session['user_id']))
     dbconnect.execute("UPDATE users SET address='%s', latitude='%s', longitude='%s'WHERE id='%s'" % (address, googlelatlng[0], googlelatlng[1], session['user_id']))
     dbconnect.commit()
     dbconnect.close()
