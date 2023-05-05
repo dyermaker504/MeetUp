@@ -242,9 +242,13 @@ def add_friend():
     # Check if user is logged in
     if 'user_id' not in session:
         return redirect(url_for('index'))
-
+    
     # Get form data
     friend_username = request.form.get('friend_username')
+    
+    if session['username'] == friend_username:
+        flash("Can't friend yourself.")
+        return redirect(url_for('index'))
 
     # Find friend user by username
     dbconnect = get_db_dbconnectection()
